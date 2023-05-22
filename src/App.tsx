@@ -8,6 +8,7 @@ import Spinner from "./components/Spinner/Spinner";
 
 function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasksCompleted, setTaskCompleted] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const apiUrl = import.meta.env.VITE_API_BACKEND;
 
@@ -17,6 +18,18 @@ function App() {
     setTasks(jsonData);
     return jsonData;
   };
+
+  const getTasksCompleted = () => {
+    const tasksCompleted = tasks.reduce((count, currentValue) => {
+      if (currentValue.completed) {
+        return count + 1;
+      } else {
+        return count;
+      }
+    }, 0);
+
+    setTaskCompleted(tasksCompleted);
+  };
   useEffect(() => {
     setLoading(true);
     setTimeout(() => {
@@ -25,9 +38,16 @@ function App() {
     }, 1000);
   }, []);
 
+  useEffect(() => {
+    getTasksCompleted();
+  }, [tasks]);
+
   return (
     <main>
       <h1>TO DO App</h1>
+      <div style={{ padding: "1rem 0" }}>
+        Actions Completed: {tasksCompleted} / {tasks.length}
+      </div>
       <ActionHeader fetchData={fetchData} />
       {tasks && tasks.length >= 0 && (
         <GridCard fetchData={fetchData} tasks={tasks} setTasks={setTasks} />

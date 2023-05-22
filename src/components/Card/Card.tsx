@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Task } from "../../types/note.type";
 import { FaTimes } from "react-icons/fa";
 import styles from "./Card.module.css";
@@ -8,12 +8,14 @@ export interface CardProps {
   task: Task;
   fetchData: () => void;
   deleteTask: (taskId: number) => void;
+  completeTask: (taskId: number, completed: boolean) => void;
 }
-const Card: React.FC<CardProps> = ({ task, fetchData, deleteTask }) => {
+const Card: React.FC<CardProps> = ({ task, deleteTask, completeTask }) => {
   const [completed, setCompleted] = useState<boolean>(task.completed);
   const [description, setDescription] = useState<string>(task.description);
   const [editMode, setEditMode] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
+  const cardRef = useRef<HTMLInputElement>(null);
   const apiUrl = import.meta.env.VITE_API_BACKEND;
 
   const calculateDaysPassed = (startDate: number): string => {
@@ -43,7 +45,7 @@ const Card: React.FC<CardProps> = ({ task, fetchData, deleteTask }) => {
         });
       } catch (error: any) {
         toast.error(error.message ?? "Error updating task", {
-          position: toast.POSITION.TOP_CENTER,
+          position: toast.POSITION.TOP_RIGHT,
         });
       }
     },
@@ -61,7 +63,7 @@ const Card: React.FC<CardProps> = ({ task, fetchData, deleteTask }) => {
       });
     } catch (error: any) {
       toast.error(error.message ?? "Error Deleting Task", {
-        position: toast.POSITION.TOP_CENTER,
+        position: toast.POSITION.TOP_RIGHT,
       });
     }
   };
@@ -78,27 +80,46 @@ const Card: React.FC<CardProps> = ({ task, fetchData, deleteTask }) => {
         });
       } catch (error: any) {
         toast.error(error.message ?? "Error setting complete the task", {
-          position: toast.POSITION.TOP_CENTER,
+          position: toast.POSITION.TOP_RIGHT,
         });
       }
     };
+    completeTask(task.id, completed);
     setCompletedNote(task.id, completed);
   }, [completed]);
 
   useEffect(() => {
     if (description.trim() === "") {
       setError("Field is required");
+    } else {
+      setError("");
     }
   }, [description]);
 
+  useEffect(() => {
+    const handleOutsideClick = (event: any) => {
+      if (
+        cardRef &&
+        cardRef.current &&
+        !cardRef.current.contains(event.target)
+      ) {
+        setEditMode(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
+
   return (
     <div
-      onBlur={() => {
-        setEditMode(false);
-      }}
+      ref={cardRef}
       className={`${styles.card} ${completed ? styles.card__completed : ""}`}
     >
-      <div>
+      <div className={styles.card__description}>
         {editMode ? (
           <input
             className={styles.inputDescription}
@@ -116,6 +137,7 @@ const Card: React.FC<CardProps> = ({ task, fetchData, deleteTask }) => {
             <p>{description}</p>
           </div>
         )}
+
         <p className={styles.card__dateCreated}>
           {calculateDaysPassed(task.creationDate)}
         </p>

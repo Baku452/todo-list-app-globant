@@ -17,6 +17,20 @@ export const GridCard: React.FC<GridCardProps> = ({
     const tasksUpdated = tasks.filter((task) => task.id !== taskId);
     setTasks(tasksUpdated);
   };
+
+  const completeTask = (taskId: number, isCompleted: boolean) => {
+    const tasksUpdated = tasks.map((task) => {
+      if (task.id === taskId) {
+        return {
+          ...task,
+          completed: isCompleted,
+        };
+      } else {
+        return task;
+      }
+    });
+    setTasks(tasksUpdated);
+  };
   return (
     <div className={styles.gridCard}>
       {tasks.map((task) => (
@@ -25,6 +39,7 @@ export const GridCard: React.FC<GridCardProps> = ({
           task={task}
           fetchData={fetchData}
           deleteTask={deleteTask}
+          completeTask={completeTask}
         />
       ))}
     </div>

@@ -1,0 +1,13 @@
+.actionHeader{
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.actionHeader input{
+    padding: 0.3rem 0.3rem;
+}
+
+.actionHeader button{
+    background-color: rgb(112, 42, 176);
+}

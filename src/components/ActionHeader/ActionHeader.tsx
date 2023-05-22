@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
+import styles from "./actionheader.module.css";
 
 export interface ActionHeaderProps {
   fetchData: () => void;
@@ -22,17 +23,17 @@ const ActionHeader: React.FC<ActionHeaderProps> = ({ fetchData }) => {
 
       if (response.ok) {
         toast.success("Note create succesfully", {
-          position: toast.POSITION.TOP_CENTER,
+          position: toast.POSITION.TOP_RIGHT,
         });
       } else {
         toast.error("Failed to create the note", {
-          position: toast.POSITION.TOP_CENTER,
+          position: toast.POSITION.TOP_RIGHT,
         });
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       toast.error(error?.message ?? "An error", {
-        position: toast.POSITION.TOP_CENTER,
+        position: toast.POSITION.TOP_RIGHT,
       });
     } finally {
       fetchData();
@@ -40,7 +41,7 @@ const ActionHeader: React.FC<ActionHeaderProps> = ({ fetchData }) => {
   };
   return (
     <div>
-      <form onSubmit={(e) => handleSubmit(e)}>
+      <form className={styles.actionHeader} onSubmit={(e) => handleSubmit(e)}>
         <input
           type="text"
           value={note}
