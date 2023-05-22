@@ -1,16 +1,17 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Note } from "../../types/note.type";
+import { Task } from "../../types/note.type";
 import { FaTimes } from "react-icons/fa";
 import styles from "./Card.module.css";
 import { toast } from "react-toastify";
 
 export interface CardProps {
-  note: Note;
+  task: Task;
   fetchData: () => void;
+  deleteTask: (taskId: number) => void;
 }
-const Card: React.FC<CardProps> = ({ note, fetchData }) => {
-  const [completed, setCompleted] = useState<boolean>(note.completed);
-  const [description, setDescription] = useState<string>(note.description);
+const Card: React.FC<CardProps> = ({ task, fetchData, deleteTask }) => {
+  const [completed, setCompleted] = useState<boolean>(task.completed);
+  const [description, setDescription] = useState<string>(task.description);
   const [editMode, setEditMode] = useState<boolean>(false);
 
   const apiUrl = import.meta.env.VITE_API_BACKEND;
@@ -26,7 +27,7 @@ const Card: React.FC<CardProps> = ({ note, fetchData }) => {
     if (daysPassed === 0) {
       return "Created Today";
     } else {
-      return "Created " + daysPassed + "ago";
+      return "Created " + daysPassed + " day(s) ago";
     }
   };
 
@@ -51,6 +52,7 @@ const Card: React.FC<CardProps> = ({ note, fetchData }) => {
 
   const handleDeleteTask = async (taskId: number) => {
     try {
+      deleteTask(taskId);
       await fetch(apiUrl + `tasks/${taskId}`, {
         method: "DELETE",
         headers: {
@@ -80,15 +82,12 @@ const Card: React.FC<CardProps> = ({ note, fetchData }) => {
         });
       }
     };
-    setCompletedNote(note.id, completed);
+    setCompletedNote(task.id, completed);
   }, [completed]);
 
   useEffect(() => {
-    if (description !== "") {
-      // handleEditTask(note.id, description);
-    } else {
-      handleDeleteTask(note.id);
-      fetchData();
+    if (description === "") {
+      handleDeleteTask(task.id);
     }
   }, [description]);
 
@@ -100,7 +99,7 @@ const Card: React.FC<CardProps> = ({ note, fetchData }) => {
             className={styles.inputDescription}
             onBlur={() => {
               setEditMode(false);
-              handleEditTask(note.id, description);
+              handleEditTask(task.id, description);
             }}
             type="text"
             value={description}
@@ -110,7 +109,7 @@ const Card: React.FC<CardProps> = ({ note, fetchData }) => {
           <p onClick={() => setEditMode((value) => !value)}>{description}</p>
         )}
         <p className={styles.card__dateCreated}>
-          {calculateDaysPassed(note.creationDate)}
+          {calculateDaysPassed(task.creationDate)}
         </p>
       </div>
       <div className={styles.card__actions}>
@@ -119,7 +118,7 @@ const Card: React.FC<CardProps> = ({ note, fetchData }) => {
           checked={completed}
           onChange={() => setCompleted((checked) => !checked)}
         />
-        <button onClick={() => handleDeleteTask(note.id)}>
+        <button onClick={() => handleDeleteTask(task.id)}>
           <FaTimes />
         </button>
       </div>

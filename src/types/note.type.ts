@@ -1,4 +1,4 @@
-export interface Note {
+export interface Task {
   id: number;
   description: string;
   completed: boolean;

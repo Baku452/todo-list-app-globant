@@ -1,17 +1,31 @@
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import styles from "./GridCard.module.css";
-import { Note } from "../../types/note.type";
+import { Task } from "../../types/note.type";
 import Card from "../Card/Card";
 
 export interface GridCardProps {
-  notes: Note[];
+  tasks: Task[];
+  setTasks: Dispatch<SetStateAction<Task[]>>;
   fetchData: () => void;
 }
-export const GridCard: React.FC<GridCardProps> = ({ notes, fetchData }) => {
+export const GridCard: React.FC<GridCardProps> = ({
+  tasks,
+  fetchData,
+  setTasks,
+}) => {
+  const deleteTask = (taskId: number) => {
+    const tasksUpdated = tasks.filter((task) => task.id !== taskId);
+    setTasks(tasksUpdated);
+  };
   return (
     <div className={styles.gridCard}>
-      {notes.map((note) => (
-        <Card key={note.id} note={note} fetchData={fetchData} />
+      {tasks.map((task) => (
+        <Card
+          key={task.id}
+          task={task}
+          fetchData={fetchData}
+          deleteTask={deleteTask}
+        />
       ))}
     </div>
   );
