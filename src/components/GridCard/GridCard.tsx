@@ -5,12 +5,13 @@ import Card from "../Card/Card";
 
 export interface GridCardProps {
   notes: Note[];
+  fetchData: () => void;
 }
-export const GridCard: React.FC<GridCardProps> = ({ notes }) => {
+export const GridCard: React.FC<GridCardProps> = ({ notes, fetchData }) => {
   return (
     <div className={styles.gridCard}>
       {notes.map((note) => (
-        <Card key={note.id} note={note} />
+        <Card key={note.id} note={note} fetchData={fetchData} />
       ))}
     </div>
   );
