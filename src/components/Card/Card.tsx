@@ -13,7 +13,7 @@ const Card: React.FC<CardProps> = ({ task, fetchData, deleteTask }) => {
   const [completed, setCompleted] = useState<boolean>(task.completed);
   const [description, setDescription] = useState<string>(task.description);
   const [editMode, setEditMode] = useState<boolean>(false);
-
+  const [error, setError] = useState<string>("");
   const apiUrl = import.meta.env.VITE_API_BACKEND;
 
   const calculateDaysPassed = (startDate: number): string => {
@@ -86,27 +86,35 @@ const Card: React.FC<CardProps> = ({ task, fetchData, deleteTask }) => {
   }, [completed]);
 
   useEffect(() => {
-    if (description === "") {
-      handleDeleteTask(task.id);
+    if (description.trim() === "") {
+      setError("Field is required");
     }
   }, [description]);
 
   return (
-    <div className={styles.card}>
+    <div
+      onBlur={() => {
+        setEditMode(false);
+      }}
+      className={`${styles.card} ${completed ? styles.card__completed : ""}`}
+    >
       <div>
         {editMode ? (
           <input
             className={styles.inputDescription}
             onBlur={() => {
-              setEditMode(false);
               handleEditTask(task.id, description);
             }}
+            required={true}
             type="text"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
         ) : (
-          <p onClick={() => setEditMode((value) => !value)}>{description}</p>
+          <div onClick={() => setEditMode(true)}>
+            {error && <span className={styles.field__required}>{error}</span>}
+            <p>{description}</p>
+          </div>
         )}
         <p className={styles.card__dateCreated}>
           {calculateDaysPassed(task.creationDate)}
@@ -118,7 +126,10 @@ const Card: React.FC<CardProps> = ({ task, fetchData, deleteTask }) => {
           checked={completed}
           onChange={() => setCompleted((checked) => !checked)}
         />
-        <button onClick={() => handleDeleteTask(task.id)}>
+        <button
+          className={styles.buttonDelete}
+          onClick={() => handleDeleteTask(task.id)}
+        >
           <FaTimes />
         </button>
       </div>

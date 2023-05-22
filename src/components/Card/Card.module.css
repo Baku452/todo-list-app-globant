@@ -5,6 +5,7 @@
   justify-content: space-between;
   border-bottom: 1px solid #b5b5b5;
   height: 90px;
+  transition: all .2s;
 }
 
 .card__dateCreated{
@@ -13,9 +14,26 @@
 }
 .card__actions{
   display: flex;
+  align-items: center;
+}
+.buttonDelete{
+  height: fit-content;
+  width: fit-content;
+  display: block;
+  padding: 0.5rem;
+  background-color: inherit;
+  margin-left: 0.5rem;
+}
+
+.field__required{
+  color: #a22e2e;
 }
 .inputDescription {
   box-sizing: border-box;
   margin: 0.5em 0;
   padding: 0.5em;
+}
+
+.card__completed {
+  text-decoration: line-through;
 }
